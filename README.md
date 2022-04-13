@@ -9,13 +9,10 @@ Prof. Dr. Andreas Kerren and Angelos Chatzimparmpas
 ### LNU, Faculty of Technology
 ---
 
-
 ---
-### [Bachelor Thesis - Overleaf]
-(https://www.overleaf.com/project/62160132a4acf981ca624cc0)
+#### [Bachelor Thesis - Overleaf](https://www.overleaf.com/project/62160132a4acf981ca624cc0)
 ---
 
 ---
-### [Jupyter Notebook]
-(2dv50e.ipynb)
+#### [Jupyter Notebook](2dv50e.ipynb)
 ---
