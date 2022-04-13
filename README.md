@@ -7,21 +7,17 @@ This 15 sp Bachelor's thesis is focusing on visually investigating the impact of
 The evaluation to be based on provided data and charts for different metamodels comparison.
 
 ---
-### Author
+#### Author
 Ilya Ploshchik
-### Supervisors
+#### Supervisors
 Angelos Chatzimparmpas and Prof. Dr. Andreas Kerren 
-### LNU, Faculty of Technology
+
 ---
 
 ---
 #### [Bachelor Thesis - Overleaf](https://www.overleaf.com/project/62160132a4acf981ca624cc0)
----
-
----
 #### [Jupyter Notebook - Github](2dv50e.ipynb)
----
-
----
 #### [Jupyter Notebook - ReviewNB](https://app.reviewnb.com/ilyaploshchik/2dv50e/blob/main/2dv50e.ipynb)
 ---
+---
+***Linnaeus university, Faculty of Technology - Spring 2022***
