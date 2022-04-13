@@ -5,7 +5,7 @@
 ### Author
 Ilya Ploshchik
 ### Supervisors
-Prof. Dr. Andreas Kerren and Angelos Chatzimparmpas
+Angelos Chatzimparmpas and Prof. Dr. Andreas Kerren 
 ### LNU, Faculty of Technology
 ---
 
