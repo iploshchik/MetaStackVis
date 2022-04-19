@@ -1,5 +1,5 @@
 pandas
-umap
+umap-learn
 streamlit
-plotly.express
-sklearn
+plotly-express
+scikit-learn
