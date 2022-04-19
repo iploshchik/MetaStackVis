@@ -20,8 +20,8 @@ Angelos Chatzimparmpas and Prof. Dr. Andreas Kerren
 
 ---
 #### [Bachelor Thesis - Overleaf](https://www.overleaf.com/project/62160132a4acf981ca624cc0)
-#### [Jupyter Notebook - Github](2dv50e.ipynb)
-#### [Jupyter Notebook - ReviewNB](https://app.reviewnb.com/ilyaploshchik/2dv50e/blob/main/2dv50e.ipynb)
+#### [Source file - Github](2dv50e.py)
+#### [StreamLit-dashboard](https://share.streamlit.io/ilyaploshchik/2dv50e/main/2dv50e.py)
 ---
 ---
 ***Linnaeus university, Faculty of Technology - Spring 2022***
