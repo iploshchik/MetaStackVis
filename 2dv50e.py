@@ -16,10 +16,9 @@
 import pandas as pd
 import umap
 import streamlit as st
-import plotly.graph_objects as go
 import plotly.express as px
-import numpy as np
-
+from sklearn import preprocessing
+import plotly.graph_objects as go
 
 # Page layout
 st.set_page_config(page_title='Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning',layout='wide')
@@ -61,17 +60,17 @@ def create_UMAP_chart(df_probabilities, algo_nr):
     df_umap['algorithm_name'] = df_umap['algorithm_nr'].map(algos)
     # add overall performance data to umap
     df_umap['performance'] = df_model['overall_performance']
-    # Plot UMAP with algorithm as a color and performance as a marker line
+    # re-scale df.performance in scale from 0 to 1 and save as new column for better visualization
+    df_umap['performance_scaled'] = preprocessing.MinMaxScaler().fit_transform(df_umap['performance'].values.reshape(-1,1))
+    # Plot UMAP with algorithm as a color 
     fig = px.scatter(df_umap, x='UMAP_1', y='UMAP_2', color='algorithm_name',
             hover_name='algorithm_name', hover_data=['performance'])
     fig.update_layout(title_text='UMAP Plot')
-    # st.plotly_chart(fig) 
-    # fig = px.scatter(df_umap, x="UMAP_1", y="UMAP_2", color = 'algorithm_name')
-    # # change legend name to algorithm
+    # change legend name to algorithm
     fig.update_layout(legend_title_text='Algorithm')
-    # change size of points to 10, reduce opacity and change marker border color based on df_umap['performance']
-    fig.update_traces(marker=dict(size=10, opacity=0.75, line=dict(width=2, color=df_umap['performance'])), 
-            selector=dict(mode='markers'))
+    # change size of points to 10, reduce opacity and change marker border color, based on performance
+    fig.update_traces(marker=dict(size=10, opacity=0.75, line=dict(width=2, color=df_umap['performance_scaled'])), 
+    selector=dict(mode='markers'))
     st.plotly_chart(fig)
 
 
