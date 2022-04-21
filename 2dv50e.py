@@ -25,8 +25,8 @@ st.set_page_config(page_title='Visually-Assisted Performance Evaluation of Metam
 # Sidebar - Collects user input features into dataframe
 st.sidebar.header('Upload your model probabilities data')
 uploaded_probabilities = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=0)
-st.sidebar.header('Upload your target data')
-uploaded_target = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=1)
+# st.sidebar.header('Upload your target data')
+# uploaded_target = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=1)
 st.sidebar.header('Upload your model data')
 uploaded_model = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=2)
 
@@ -74,7 +74,7 @@ def create_UMAP_chart(df_probabilities, algo_nr):
 
 
 
-if uploaded_probabilities is not None and uploaded_target is not None:
+if uploaded_probabilities is not None and uploaded_model is not None:
     df_probabilities = pd.read_csv(uploaded_probabilities)
     df_model = pd.read_csv(uploaded_model)
     algo_nr = df_model.algorithm_id
