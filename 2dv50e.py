@@ -4,7 +4,6 @@ import umap
 import streamlit as st
 import plotly.express as px
 from sklearn import preprocessing
-import numpy as np
 
 # Page layout
 st.set_page_config(page_title='Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning',layout='wide')
