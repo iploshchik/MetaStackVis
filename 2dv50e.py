@@ -18,6 +18,7 @@ import umap
 import streamlit as st
 import plotly.express as px
 from sklearn import preprocessing
+import numpy as np
 
 # Page layout
 st.set_page_config(page_title='Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning',layout='wide')
@@ -61,15 +62,22 @@ def create_UMAP_chart(df_probabilities, algo_nr):
     df_umap['performance'] = df_model['overall_performance']
     # re-scale df.performance in scale from 0 to 1 and save as new column for better visualization
     df_umap['performance_scaled'] = preprocessing.MinMaxScaler().fit_transform(df_umap['performance'].values.reshape(-1,1))
-    # Plot UMAP with algorithm as a color 
-    fig = px.scatter(df_umap, x='UMAP_1', y='UMAP_2', color='algorithm_name',
-            hover_name='algorithm_name', hover_data=['performance'])
+    # create new column for text of points
+    df_umap['text'] = df_umap['algorithm_name'] + '<br>' + 'Performance: ' + df_umap['performance'].astype(str)
+    # create new column for color coding of points
+    df_umap['color'] = df_umap['performance_scaled'].apply(lambda x: 'rgb(' + str(int(x*255)) + ','+ 
+            str(int(x*255)) + ','+ str(int(x*255)) + ')')
+    # df_umap['color'] = df_umap['performance_scaled'].apply(lambda x: 'rgba(255, 0, 0, ' + str(x) + ')')
+    # Plot UMAP
+    symbols = ['circle', 'square', 'x', 'cross', 'diamond', 'star', 'hexagram', 'triangle-right', 'triangle-left', 'triangle-down', 'triangle-up']
+
+    fig = px.scatter(df_umap, x='UMAP_1', y='UMAP_2', color='performance_scaled', hover_name='text',
+            symbol = df_umap['algorithm_name'], symbol_sequence = symbols, labels={'performance_scaled':'Performance'},
+            color_continuous_scale=px.colors.sequential.Viridis)
     fig.update_layout(title_text='UMAP Plot')
-    # change legend name to algorithm
-    fig.update_layout(legend_title_text='Algorithm')
-    # change size of points to 10, reduce opacity and change marker border color, based on performance
-    fig.update_traces(marker=dict(size=10, opacity=0.75, line=dict(width=2, color=df_umap['performance_scaled'])), 
-    selector=dict(mode='markers'))
+    fig.update_layout(showlegend=False)
+    # Set marker symbol shape based on algorithm
+    fig.update_traces(marker=dict(size=10, opacity=0.9, line=dict(width=2, color='DarkSlateGrey')), selector=dict(mode='markers'))
     st.plotly_chart(fig)
 
 
@@ -88,7 +96,6 @@ else:
     if st.button('Press to use Example Dataset'):
         path = r'D:\github\2dv50e\Data\1. Heart Disease'
         df_probabilities = pd.read_csv(path + r'\topModelsProbabilities.csv')
-        df_target = pd.read_csv(path + r'\target.csv')
         df_model = pd.read_csv(path + r'\topModels.csv')
         algo_nr = df_model.algorithm_id
         create_UMAP_chart(df_probabilities, algo_nr)
