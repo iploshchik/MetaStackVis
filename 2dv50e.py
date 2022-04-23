@@ -26,7 +26,7 @@ parameter_umap_metric = st.sidebar.selectbox('Metric', ('euclidean', 'manhattan'
 parameter_umap_min_dist = st.sidebar.number_input('Minimal distance', 0.1, key='min_dist')
 st.sidebar.write('---')
 st.sidebar.subheader('General Plotly charts Parameters')
-plotly_size = st.sidebar.number_input('Size', 300, key='size')
+plotly_size = st.sidebar.number_input('Size', 600, key='size')
 # plotly_color = st.sidebar.selectbox('Color', ('red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'black', 'grey'), key='color')
 st.sidebar.write('---')
 st.write('Choose visualization options below')
