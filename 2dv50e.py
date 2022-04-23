@@ -7,25 +7,29 @@ from sklearn import preprocessing
 
 # Page layout
 st.set_page_config(page_title='Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning',layout='wide')
+st.subheader('Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning')
+
 
 # Sidebar - Collects user input features into dataframe
-st.sidebar.header('Upload your model probabilities data')
-uploaded_probabilities = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=0)
+st.sidebar.subheader('Upload your model probabilities data')
+uploaded_probabilities = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key='probabilities')
 # st.sidebar.header('Upload your target data')
-# uploaded_target = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=1)
-st.sidebar.header('Upload your model data')
-uploaded_model = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key=2)
+# uploaded_target = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key='target')
+st.sidebar.subheader('Upload your model data')
+uploaded_model = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"], key='model')
 
 
 # Sidebar - Specify parameter settings
-st.sidebar.header('Set Parameters for UMAP')
-parameter_umap_n_neighbors = st.sidebar.number_input('Number of neighbors (n_neighbors)', 5)
-parameter_umap_metric = st.sidebar.selectbox('Metric', ('euclidean', 'manhattan', 'chebyshev', 'minkowski'))
-parameter_umap_min_dist = st.sidebar.number_input('Minimal distance', 0.1)
+st.sidebar.subheader('Set Parameters for UMAP Chart')
+parameter_umap_n_neighbors = st.sidebar.number_input('Number of neighbors (n_neighbors)', 5, key='n_neighbors')
+parameter_umap_metric = st.sidebar.selectbox('Metric', ('euclidean', 'manhattan', 'chebyshev', 'minkowski'), key='metric')
+parameter_umap_min_dist = st.sidebar.number_input('Minimal distance', 0.1, key='min_dist')
 st.sidebar.write('---')
-
-st.subheader('Dataset')
-st.write('The dataset consists of the model probabilities for each model in the ensemble and the target variable.')
+st.sidebar.subheader('General Plotly charts Parameters')
+plotly_size = st.sidebar.number_input('Size', 300, key='size')
+# plotly_color = st.sidebar.selectbox('Color', ('red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown', 'black', 'grey'), key='color')
+st.sidebar.write('---')
+st.write('Choose visualization options below')
 
 algos = {1:'K-Nearest Neighbor', 2:'Support Vector Machine', 3:'Gaussian Naive Bayes', 4:'Multilayer Perceptron', 5:'Logistic Regression',
         6:'Linear Discriminant Analysis', 7:'Quadratic Discriminant Analysis', 8:'Random Forest', 9:'Extra Trees', 10:'Adaptive Boosting',
@@ -84,7 +88,7 @@ def create_UMAP_chart(df_probabilities, algo_nr):
     # add tooltip
     fig.update_layout(hovermode='closest')
     # define size of figure
-    fig.update_layout(width=600, height=550)
+    fig.update_layout(width=plotly_size + plotly_size/10, height=plotly_size)
 
     st.plotly_chart(fig)
 
@@ -96,7 +100,12 @@ if uploaded_probabilities is not None and uploaded_model is not None:
     algo_nr = df_model.algorithm_id
     # Check if the number of rows in the probabilities dataframe is equal to the number of columns in the models dataframe
     if len(df_probabilities) == len(algo_nr):
-        create_UMAP_chart(df_probabilities, algo_nr)
+        if st.checkbox('Show UMAP Chart'):
+            create_UMAP_chart(df_probabilities, algo_nr)
+            with st.expander("Algorithm Details"):
+                st.write('Following algorithms are presented in the chart: K-Nearest Neighbor, Support Vector Machine, \
+                Gaussian Naive Bayes, Multilayer Perceptron,Logistic Regression, Linear Discriminant Analysis, \
+                Quadratic Discriminant Analysis, Random Forest, Extra Trees, Adaptive Boosting, Gradient Boosting')
     else:
         st.write('The number of columns in the probabilities dataframe is not equal to the number of rows in the target dataframe.')
 else:
@@ -106,4 +115,5 @@ else:
         df_probabilities = pd.read_csv(path + r'\topModelsProbabilities.csv')
         df_model = pd.read_csv(path + r'\topModels.csv')
         algo_nr = df_model.algorithm_id
-        create_UMAP_chart(df_probabilities, algo_nr)
+        if st.checkbox('Show UMAP Chart'):
+            create_UMAP_chart(df_probabilities, algo_nr)
