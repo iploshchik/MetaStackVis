@@ -53,6 +53,7 @@ st.write('Choose visualization options below')
 
 
 # UMAP function
+@st.cache
 def umap_model (df_prob, df_mod, parameter_umap_n_neighbors = parameter_umap_n_neighbors, 
                 parameter_umap_min_dist = parameter_umap_min_dist, 
                 parameter_umap_metric = parameter_umap_metric):
@@ -82,6 +83,11 @@ def umap_model (df_prob, df_mod, parameter_umap_n_neighbors = parameter_umap_n_n
         df_umap['log_loss'] = df_model['log_loss']
         df_umap['performance'] = round((df_umap['accuracy'] + df_umap['precision'] + df_umap['recall'] + df_umap['roc_auc_score'] + \
                         df_umap['geometric_mean_score'] + df_umap['matthews_corrcoef'] + df_umap['f1_weighted']) / 7, 2)
+        # convert columns types
+        df_umap = df_umap.astype({'UMAP_1': 'float64', 'UMAP_2': 'float64', 'performance': 'float64', 'algorithm_id': 'int64',
+                        'algorithm_name': 'str', 'model_id': 'str', 'hyperparameters': 'str'})
+        # create new column "size", set to 3 for rows with "meta" in "model_id", else 1
+        df_umap['size'] = np.where(df_umap['model_id'].str.contains('meta'), 3, 1)
         # create new column for text of points
         df_umap['text'] = df_umap['algorithm_name'] + '<br>' + 'Performance: ' + \
                 df_umap['performance'].astype(str) + '%' + '<br>' + 'Model ID: ' + df_umap['model_id'].astype(str) + \
@@ -94,13 +100,11 @@ def umap_model (df_prob, df_mod, parameter_umap_n_neighbors = parameter_umap_n_n
         # drop metrics that are not needed
         df_umap = df_umap.drop(columns=['accuracy', 'precision', 'recall', 'roc_auc_score', 'geometric_mean_score', 
                                         'matthews_corrcoef', 'f1_weighted', 'log_loss'])
-        # convert columns types
-        df_umap = df_umap.astype({'UMAP_1': 'float64', 'UMAP_2': 'float64', 'performance': 'float64', 'algorithm_id': 'int64',
-                                    'algorithm_name': 'str', 'model_id': 'str', 'hyperparameters': 'str', 'text': 'str'})
 
         return df_umap
 
 # Function to choose umap algorithmes based on perfromance (top 11 models)
+@st.cache
 def umap_best(df_umap):
    # Select hyperparameters for best model in each algorithm
     df_umap_best = df_umap.groupby('algorithm_id').apply(lambda x: x.sort_values('performance', ascending=False).iloc[0])
@@ -129,13 +133,13 @@ def umap_plot(df_umap):
         # Define symbols for each algorithm
         symbols = ['circle', 'square', 'x', 'cross', 'diamond', 'star', 'hexagram', 'triangle-right', 'triangle-left', 'triangle-down', 'triangle-up']
         # Plot UMAP, add hovertext and symbols, define colorscale by performance, add title
-        fig = px.scatter(df_umap, x='UMAP_1', y='UMAP_2', color='performance', hover_name='text',
-                symbol = df_umap['algorithm_id'], symbol_sequence = symbols, labels=dict(UMAP_1='', UMAP_2='', performance='Performance'),
+        fig = px.scatter(df_umap, x='UMAP_1', y='UMAP_2', color='performance', size='size', hover_name='text',
+                symbol = 'algorithm_id', symbol_sequence = symbols, labels=dict(UMAP_1='', UMAP_2='', performance='Performance'),
                 color_continuous_scale=px.colors.sequential.Viridis)
         fig.update_layout(title_text='UMAP Plot')
         fig.update_layout(showlegend=False)
         # Set marker symbol shape based on algorithm
-        fig.update_traces(marker=dict(size=15, opacity=0.9, line=dict(width=1, color='Black')), selector=dict(mode='markers'))
+        fig.update_traces(marker=dict(opacity=0.8, line=dict(width=1, color='Black')), selector=dict(mode='markers'))
         # Remove axis labels
         fig.update_layout(xaxis=dict(showticklabels=False), yaxis=dict(showticklabels=False))
         # define plot as square
