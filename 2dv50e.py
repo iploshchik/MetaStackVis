@@ -269,9 +269,3 @@ if uploaded_probabilities is not None and uploaded_model is not None and uploade
             Quadratic Discriminant Analysis, Random Forest, Extra Trees, Adaptive Boosting, Gradient Boosting')
 else:
     st.info('Awaiting for CSV file to be uploaded.')
-    if st.button('Press to use Example Dataset'):
-        path = r'D:\github\2dv50e\Data\1. Heart Disease'
-        df_probabilities = pd.read_csv(path + r'\topModelsProbabilities.csv')
-        df_model = pd.read_csv(path + r'\topModels.csv')
-        algo_nr = df_model['algorithm_id']
-        if st.checkbox('Show UMAP Chart'):
