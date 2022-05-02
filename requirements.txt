@@ -3,3 +3,5 @@ umap-learn
 streamlit
 plotly-express
 scikit-learn
+imblearn
+numpy
