@@ -1,8 +1,9 @@
 *.csv
 temp.ipynb
-Data/1. Heart Disease/MetaModelsPerformance.csv
-Data/1. Heart Disease/MetaModelsProbabilities.csv
 *.webp
 *.html
-Data/1. Heart Disease/MetaModelsPerformance.csv
-Data/1. Heart Disease/MetaModelsProbabilities.csv
+*.DS_Store
+*.pyc
+*.docx
+*.json
+2dv50e_Pima.ipynb
