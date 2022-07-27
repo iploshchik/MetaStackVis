@@ -33,8 +33,14 @@ st.set_page_config(
     page_title='Visually-Assisted Metamodels Evaluation',
     page_icon="data-science.png")
 
+col1, col2 = st.columns(2)
 
-st.header('Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning')
+with col1:
+        st.header('Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning')
+
+with col2:
+        image = Image.open('data-science.png')
+        st.image(image)
 
 
 with st.expander('Initital information'):
