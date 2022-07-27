@@ -29,7 +29,8 @@ which are not the same for all 11 meta models.
 
 '''
 
-algo = st.session_state.algo
+algos = {1:'K-Nearest Neighbor', 2:'Support Vector Machine', 3:'Gaussian Naive Bayes', 4:'Multilayer Perceptron', 5:'Logistic Regression', 6:'Linear Discriminant Analysis', 7:'Quadratic Discriminant Analysis', 8:'Random Forest', 9:'Extra Trees', 10:'Adaptive Boosting', 11:'Gradient Boosting'}
+algo = ['knn', 'svm', 'gnb', 'mlp', 'lr', 'lda', 'qda', 'rf', 'et', 'ab', 'gb']
 
 @st.experimental_memo
 def plotting_comparison(df_model_meta, df_prob_meta, algo):

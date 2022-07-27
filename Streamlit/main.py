@@ -80,11 +80,14 @@ with st.expander('Credits and author of the tool'):
 
                 ---
                 ***Linnaeus university, Faculty of Technology - Spring 2022***
+
+                ---
+        
+                #### Attribues:
+                [Data Science Icon](https://iconscout.com/icons/data-science) by [Kiran Shastry](https://iconscout.com/contributors/kiran-shastry)
+
         '''
         )
-
-
-
 
 
 def on_click_hdb():
@@ -138,9 +141,7 @@ if uploaded_source_train is not None and uploaded_source_test is not None and up
 
         algo_nr = df_mod['algorithm_id']
 
-        algos = {1:'K-Nearest Neighbor', 2:'Support Vector Machine', 3:'Gaussian Naive Bayes', 4:'Multilayer Perceptron', 5:'Logistic Regression',
-        6:'Linear Discriminant Analysis', 7:'Quadratic Discriminant Analysis', 8:'Random Forest', 9:'Extra Trees', 10:'Adaptive Boosting',
-        11:'Gradient Boosting'}
+        algos = {1:'K-Nearest Neighbor', 2:'Support Vector Machine', 3:'Gaussian Naive Bayes', 4:'Multilayer Perceptron', 5:'Logistic Regression', 6:'Linear Discriminant Analysis', 7:'Quadratic Discriminant Analysis', 8:'Random Forest', 9:'Extra Trees', 10:'Adaptive Boosting', 11:'Gradient Boosting'}
 
         df_model = df_mod.copy()
         # rename columns in df_model
@@ -226,9 +227,5 @@ if uploaded_source_train is not None and uploaded_source_test is not None and up
         st.session_state['algos'] = algos
         st.session_state['algo'] = algo
         st.session_state['algo_names'] = algo_names
-
-
-# Attribues:
-# <a href="https://iconscout.com/icons/data-science" target="_blank">Data Science Icon</a> by <a href="https://iconscout.com/contributors/kiran-shastry" target="_blank">Kiran Shastry</a> from <a href="https://iconscout.com" target="_blank">Iconscout</a>
 
 
