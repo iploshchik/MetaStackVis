@@ -24,6 +24,7 @@ from supporting_functions import *
 from plotting_comparison import *
 
 
+
 # define random seed
 np.random.seed(42)
 
@@ -31,7 +32,8 @@ np.random.seed(42)
 
 st.set_page_config(
     page_title='Visually-Assisted Metamodels Evaluation',
-    page_icon="data-science.png")
+    page_icon="data-science.png",
+    layout='wide')
 
 col1, col2 = st.columns(2)
 
@@ -46,9 +48,10 @@ with col2:
 with st.expander('Initital information'):
         st.markdown(
         '''
-                Stacking methods (or stacked generalizations) refer to a group of ensemble learning methods where several base models (“weak learners”) are trained and combined into a metamodel with improved predictive power. Stacked generalization can reduce the bias and decrease the generalization error when compared to the use of single learning algorithms. This work is based on data from the visual analytics system, called StackGenVis, developed by ISOVIS research group at LNU and requires input data from that tool, please find more infromation about the tool [here](https://github.com/angeloschatzimparmpas/StackGenVis).  
+                Stacking methods (or stacked generalizations) refer to a group of ensemble learning methods where several base models (“weak learners”) are trained and combined into a metamodel with improved predictive power. Stacked generalization can reduce the bias and decrease the generalization error when compared to the use of single learning algorithms. This work is based on data from the visual analytics system, called StackGenVis, developed by ISOVIS research group at LNU and requires input data from that tool, please find more information about the tool [here](https://github.com/angeloschatzimparmpas/StackGenVis).  
 
-                This tool can be considered as futher developemnt of the original StackGenVis tool as it provides ens user the possibility to further investigate the impact of different clusters of based models to the overall performance of the metamodel in stacked generalization using HDBSCAN cluster comparison, UMAP and coverage analysis.  
+                This tool can be considered as further development of the original StackGenVis tool as it provides end user the possibility to further investigate the impact of different clusters of based models to the overall performance of the metamodel in stacked generalization using HDBSCAN cluster comparison, UMAP and coverage analysis. 
+ 
 
         '''
         )
@@ -61,10 +64,11 @@ with st.expander('Usage information'):
                 2. Preprocess data
                 3. Train and plot HDBSCAN clusters based on overall cluster performance (ranking)
                 4. Pick the cluster to continue the stacked generalization
-                5. Plot UMAP basemodels and metamodels for the selected cluster
-                6. Plot coverage analysis of all metamodels for specific cluster  
+                5. Plot UMAP base models and metamodels for the selected cluster
+                6. Plot coverage analysis of all metamodels for specific cluster
+                ---
+                ##### Please proceed with uploading the data from StackGenVis to the respective fields on the side menu and then proceed to the next step by clicking on the "HDBScan Clustering" page on the side menu.
 
-                Please proceedd with uploading the data from StackGenVis to the respective fields on the side menu and then proceed to the next step by clicking on the "HDBScan Clustering" page on the side menu.
         '''
         )
 
@@ -96,14 +100,19 @@ def on_click_hdb():
                 st.session_state.hdb_min_samples = min_samples
                 st.session_state.hdb_metric = metric
 
+with st.sidebar:
+        st.title("Data importing")
 
 # Sidebar - Collects user input features into dataframes
-uploaded_source_train = st.sidebar.file_uploader("Upload your source train data", type=["csv"], key='source_train')
-uploaded_source_test = st.sidebar.file_uploader("Upload your source test data", type=["csv"], key='source_test')
-uploaded_target_train = st.sidebar.file_uploader("Upload your target train data", type=["csv"], key='target_train')
-uploaded_target_test = st.sidebar.file_uploader("Upload your target test data", type=["csv"], key='target_test')
-uploaded_probabilities = st.sidebar.file_uploader("Upload your model probabilities data", type=["csv"], key='probabilities')
-uploaded_model = st.sidebar.file_uploader("Upload your model data", type=["csv"], key='model')
+with st.sidebar.expander('Training data'):
+        uploaded_source_train = st.file_uploader("Upload your source train data", type=["csv"], key='source_train')
+        uploaded_target_train = st.file_uploader("Upload your target train data", type=["csv"], key='target_train')
+with st.sidebar.expander('Test data'):
+        uploaded_source_test = st.file_uploader("Upload your source test data", type=["csv"], key='source_test')
+        uploaded_target_test = st.file_uploader("Upload your target test data", type=["csv"], key='target_test')
+with st.sidebar.expander('Model data'):
+        uploaded_probabilities = st.file_uploader("Upload your model probabilities data", type=["csv"], key='probabilities')
+        uploaded_model = st.file_uploader("Upload your model data", type=["csv"], key='model')
 
 
 #------------------------------------------------------------------------------------------------
@@ -115,10 +124,10 @@ if uploaded_source_train is not None and uploaded_source_test is not None and up
         df_source_test = pd.read_csv(uploaded_source_test)
         df_prob = pd.read_csv(uploaded_probabilities)
         df_mod = pd.read_csv(uploaded_model)
-
         df_target_train = pd.read_csv(uploaded_target_train)
-        y_train = df_target_train.copy()
         df_target_test = pd.read_csv(uploaded_target_test)
+
+        y_train = df_target_train.copy()
         y_test = df_target_test.copy()
 
         scaler = preprocessing.StandardScaler()

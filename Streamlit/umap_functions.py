@@ -90,7 +90,7 @@ def plottingUMAP(df_model, df_model_meta, df_prob, df_prob_meta):
                                         df_model_red = df_model_all_umap[df_model_all_umap['algorithm_id'] == key]
                                         fig.add_trace(go.Scatter(x=df_model_red['UMAP_1'], y=df_model_red['UMAP_2'], mode='markers', hovertext=df_model_red['text'], marker=dict(size=df_model_red['size']*20, symbol = df_model_red['algorithm_id'].map(symbols_dict), opacity = df_model_red['average_probability_norm'], line=dict(width=1, color='Black'), color=df_model_red['overall_performance'], coloraxis='coloraxis'), name = algos[key]))
 
-                                # # show symbols for each algorithm in the legend
+                                fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0))
                                 
                                 # remove axes labels
                                 fig.update_xaxes(showticklabels=False)
@@ -101,8 +101,10 @@ def plottingUMAP(df_model, df_model_meta, df_prob, df_prob_meta):
                                 fig.update_layout(hoverlabel=dict(bgcolor="white", font_size=14, font_family="Rockwell"), hovermode='closest')
                                 # add tooltip
                                 fig.update_layout(coloraxis=dict(showscale=True, colorscale='Viridis'), showlegend=True)
+                                    # add title to colorbar
+                                fig.update_layout(coloraxis_colorbar=dict(title='Metric-Based Performance', titleside='right'))
                                 # increase legend size
-                                fig.update_layout(legend_title = 'Algorithm', legend=dict(x=-0.4, y=0.9, font=dict(size=12)))
+                                fig.update_layout(legend_title = 'Algorithm', legend=dict(x=-0.4, y=1, font=dict(size=12)))
 
                                 min_perf = math.floor(df_model_all_umap['overall_performance'].min()/5)*5
                                 max_perf = math.ceil(df_model_all_umap['overall_performance'].max()/5)*5
@@ -111,7 +113,7 @@ def plottingUMAP(df_model, df_model_meta, df_prob, df_prob_meta):
                                 fig.update_layout(coloraxis=dict(cmin=min_perf, cmax=max_perf))
 
                                 # define subplot size
-                                fig.update_layout(width=1200, height=1000)
+                                fig.update_layout(width=600, height=600, margin=dict(l=0, r=0, t=0, b=0))
 
                                 # add fig to dictionary
                                 umap_figs[f'UMAP_{i}_{j}_{metric}'] = fig

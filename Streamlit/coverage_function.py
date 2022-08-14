@@ -17,7 +17,7 @@ Red box: 1st model predicts the correct class, 2nd model predicts the wrong clas
 Light red box: 1st model predicts the correct class, 2nd model predicts the wrong class and combination predicts wrong class
 Blue box: 1st model predicts the wrong class, while the 2nd model predicts the correct class and combination predicts correct class
 Light blue box: 1st model predicts the wrong class, while the 2nd model predicts the correct class and combination predicts correct class
-Black box: both models predict the wrong class
+Yellow box: both models predict the wrong class
 '''
 @st.experimental_memo
 def coverage(df, meta_1, meta_2):
@@ -42,10 +42,10 @@ def coverage(df, meta_1, meta_2):
     # reset index
     df_temp = df_temp.reset_index(drop=True)
 
-    # concate values form meta_1, meta_2 and mean as a list in a new column
+    # concate values from meta_1, meta_2 and mean as a list in a new column
     df_temp['combination'] = df_temp[['meta_1', 'meta_2', 'mean']].values.tolist()
 
-    # create new dataframe with  with 8 rows and 8 columns
+    # create new dataframe with  with n rows and n columns
     df_count = pd.DataFrame(df_temp.combination.values.reshape(n, n))
 
     fig = go.Figure()
@@ -62,14 +62,22 @@ def coverage(df, meta_1, meta_2):
         for j in range(n):
             fig.add_shape(type='circle', x0=0, y0=0, x1=1, y1=1, line=dict(width=2), row=i+1, col=j+1)
             fig.update_shapes(
+                # when both models are larger then 50%, color the box white
                 fillcolor='#ffffff' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] >= 50)
+                # when meta_1 is larger then 50% and meta_2 less then 50% and combination is larger then 50%, color the box red
                 else '#cd5c5c' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] >= 50)
+                # when meta_1 is larger then 50% and meta_2 less then 50% and combination is less then 50%, color the box light red
                 else '#df9797' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] < 50)
+                # when meta_1 is less then 50% and meta_2 larger then 50% and combination is larger then 50%, color the box blue
                 else '#2e5984' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] >= 50) 
+                # when meta_1 is less then 50% and meta_2 larger then 50% and combination is less then 50%, color the box light blue
                 else '#91bad6' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] < 50)
+                # when both moels are less then 50%, color the box yellow
                 else '#ffd700' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] < 50)
+                # else color the box white
                 else '#ffffff', row=i+1, col=j+1)
             fig.update_shapes(
+                # define circe border colors
                 line=dict(color='#675c57' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] >= 50)
                 else '#cd5c5c' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] >= 50)
                 else '#df9797' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] < 50)

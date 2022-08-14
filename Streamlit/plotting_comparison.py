@@ -16,8 +16,8 @@ import streamlit as st
 from coverage_function import *
 
 '''
-Probability average (deviation difference) for model probabilities for all models – confidence levels <br>
-Following approach presented: <br>
+Probability average (deviation difference) for model probabilities for all models – confidence levels 
+Following approach presented: 
 - get probabilities for all 11 metamodels
 - then comparing 2 metamodels, find the one with better probability of correct class for each instance
 - add this value as top probability for each instance and calculate the mean value for all instances for both models
@@ -68,6 +68,12 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
     df_prob_meta_red = df_prob_meta_t[df_prob_meta_t.apply(lambda x: x.min() < 50, axis=1)]
     # reset index for df_pred_meta_red and df_prob_meta_red
     df_prob_meta_red.reset_index(drop=True, inplace=True)
+    # add new column to store the average probability for each instance
+    df_prob_meta_red['average_probability'] = round(df_prob_meta_red.iloc[:,1:].mean(axis=1), 2) 
+    # sort by average_probability_norm
+    df_prob_meta_red.sort_values(by='average_probability', ascending=False, inplace=True)
+    # drop avergae_probability_norm column
+    df_prob_meta_red.drop(columns=['average_probability'], inplace=True)
 
     # create new dataframe with rows and columns like columns in df_pred_meta_t
     df_pred_meta_cor = pd.DataFrame(index=df_prob_meta_t.columns, columns=df_prob_meta_t.columns)
@@ -107,8 +113,7 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
     fig = go.Figure()
     fig = make_subplots(rows=12, cols=12, vertical_spacing=0.01, horizontal_spacing=0.01)
 
-    # define subplot size
-    fig.update_layout(width=1000, height=1000)
+
 
     df_model_meta_metr = df_model_meta[['accuracy', 'precision', 'recall', 'roc_auc_score', 'geometric_mean_score', 'matthews_corrcoef', 'f1_weighted']]
 
@@ -209,7 +214,7 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
                     name = algo_cap[i]), row=i+2, col=i+2)
                     # reduce text size
         fig.add_annotation(text=f'Conf.: {df_model_meta.average_probability[i]}%', showarrow=False,
-                    xref="x domain",yref="y domain", yshift =40, 
+                    xref="x domain",yref="y domain", yshift =25, 
                     font={"size":10, 'color':'#000000'}, row=i+2, col=i+2)
         # update y axis range
         fig.update_yaxes(range=[y_min, y_max], row=i+2, col=i+2)
@@ -234,8 +239,8 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
     fig.update_xaxes(showticklabels=False)
     fig.update_yaxes(showticklabels=False)
 
-    # remove background color
-    fig.update_layout(plot_bgcolor='rgba(0,0,0,0)')
+    # rdefine subplot size
+    fig.update_layout(width=600, height=600, plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0))
 
 
     # show xaxis and yaxis labels

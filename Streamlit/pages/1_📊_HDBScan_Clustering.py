@@ -10,14 +10,11 @@ from supporting_functions import *
 from plotting_comparison import *
 import hdbscan
 
+st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
+
 
 # define random seed
 np.random.seed(42)
-
-# Page layout
-
-st.header('Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning')
-st.header('HDBScan Clustering')
 
 
 def on_click_hdb():
@@ -28,9 +25,9 @@ def on_click_hdb():
 
 
 # Sidebar - Specify parameter settings
-st.sidebar.subheader('Set Parameters for HDBSCAN plot')
-parameter_hdb_cluster_size = st.sidebar.number_input('Min Cluster Size', 3, key='hdb_min_cluster_size', on_change=on_click_hdb)
-parameter_hdb_min_samples = st.sidebar.number_input('Min number of Samples', 5, key='hdb_min_samples', on_change=on_click_hdb)
+st.sidebar.subheader('Set Parameters for HDBSCAN clustering')
+parameter_hdb_cluster_size = st.sidebar.number_input('Min cluster size', 3, key='hdb_min_cluster_size', on_change=on_click_hdb)
+parameter_hdb_min_samples = st.sidebar.number_input('Min number of samples', 5, key='hdb_min_samples', on_change=on_click_hdb)
 parameter_hdb_metrics = st.sidebar.selectbox('Metric', ['euclidean', 'manhattan', 'chebyshev'], key='hdb_metric', on_change=on_click_hdb)
 
 

@@ -29,19 +29,14 @@ from coverage_function import *
 from supporting_functions import *
 from plotting_comparison import *
 
+st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
+
+plotly_config_DB_remove = dict({'displayModeBar': False})
+plotly_config_DB_part_remove = dict({'displaylogo': False, 'modeBarButtonsToRemove': ['toImage', 'select2d', 'lasso2d', 'autoscale']})
+
 
 # define random seed
 np.random.seed(42)
-
-# Page layout
-st.header('Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning')
-st.header('Plotting')
-
-
-st.sidebar.subheader('Set Parameters for UMAP Chart')
-parameter_umap_n_neighbors = st.sidebar.selectbox('Number of neighbors (n_neighbors)', [3, 4, 5, 6], key='n_neighbors')
-parameter_umap_metric = st.sidebar.selectbox('Metric', ['euclidean', 'manhattan'], key='metric')
-parameter_umap_min_dist = st.sidebar.selectbox('Minimal distance', [0.2, 0.5],key='min_dist')
 
 # add varibales from the previous page
 df_model = st.session_state.df_model
@@ -55,7 +50,7 @@ algos = st.session_state.algos
 algo = st.session_state.algo
 algo_names = st.session_state.algo_names
 
-if st.button('Calculate metamodel performance for initial run or in case source data or clusters have been updated'):
+if st.sidebar.button('Calculate metamodel performance for initial run or in case source data or clusters have been updated'):
 
         # sort dataframes by labels
 
@@ -397,6 +392,11 @@ if st.button('Calculate metamodel performance for initial run or in case source 
         st.session_state['algo_names_dict'] = algo_names_dict
         st.session_state['df_top_rows'] = df_top_rows
 
+st.sidebar.subheader('Set parameters for UMAP projection')
+parameter_umap_n_neighbors = st.sidebar.selectbox('Number of neighbors', [3, 4, 5, 6], key='n_neighbors')
+parameter_umap_metric = st.sidebar.selectbox('Metric', ['euclidean', 'manhattan'], key='metric')
+parameter_umap_min_dist = st.sidebar.selectbox('Minimal distance', [0.2, 0.5],key='min_dist')
+
 
 df_model_dict = st.session_state['df_model_dict']
 df_prob_dict = st.session_state['df_prob_dict']
@@ -411,6 +411,8 @@ df_top_rows = st.session_state.df_top_rows
 
 fig = go.Figure()
 
+# HDBSCAN ######################################################################################################################
+
 # https://plotly.com/python/horizontal-bar-charts/
 
 metrics = ['accuracy', 'precision', 'recall', 'roc_auc_score', 'geometric_mean_score', 'matthews_corrcoef', 'f1_weighted', 'average_probability']
@@ -424,29 +426,10 @@ for i in range (8):
         else:
                 fig.add_trace(go.Bar(y=df_top_rows.cluster, x=value*7, name=metrics_legend[i], orientation='h', text= np.round(value/100, 4), marker=dict(color=colors[i], line=dict(color=colors[i], width=3))))
 
-# make y axes ticks clickable
-fig.update_layout(
-        yaxis=dict(
-                tickmode='array',
-                tickvals=df_top_rows.cluster,
-                ticktext=df_top_rows.cluster,
-                tickangle=0,
-                tickfont=dict(
-                        family='Arial',
-                        size=12,
-                        color='black'
-                ),
-                showgrid=False,
-                showline=False,
-                showticklabels=True,
-                autorange=True,
-                domain=[0, 1]
-        ))
-
 # update x values size
 fig.update_layout(yaxis_tickfont_size=12, xaxis_tickfont_size=12, title_text='Model Performance', title_x=0.5)
 
-fig.update_layout(barmode='stack', paper_bgcolor='rgb(248, 248, 255)', plot_bgcolor='rgb(248, 248, 255)', margin=dict(l=0, r=0, t=0, b=0), showlegend=True, yaxis=dict(categoryorder = 'total ascending'))
+fig.update_layout(barmode='stack', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0), showlegend=True, yaxis=dict(categoryorder = 'total ascending'))
 
 # add title for x axes and y axes
 fig.update_xaxes(title_text='Overall Performance', title_font=dict(size=14))
@@ -454,8 +437,6 @@ fig.update_yaxes(title_text='Cluster', title_font=dict(size=14))
 
 # update legend names
 fig.update_layout(legend_title_text='Metrics')
-# move legend outside plot
-fig.update_layout(legend=dict(x=-0.1, y=-0.5))
 fig.update_traces(textposition='inside')
 fig.update_traces(insidetextanchor='middle')
 # add % to text
@@ -471,10 +452,12 @@ fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.shape[0], t
 for i in range (df_top_rows.shape[0]):
         fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.cluster[i], text=df_top_rows.algorithm_name[i], font = dict(size = 12), showarrow=False)
 
-fig.update_layout(width=total_length, height=df_top_rows.shape[0]*100)
+fig.update_layout(width = 1300, height=df_top_rows.shape[0]*40, margin=dict(l=0, r=0, t=0, b=0))
 
-st.title('Clusters using HDBSCAN')
-st.plotly_chart(fig, use_container_width=True)
+# update plotly config
+st.markdown('###### Metamodel performance per cluster of base models')
+st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_remove)
+
 
 min_performance_all = []
 max_performance_all = []
@@ -509,18 +492,21 @@ for key_model_meta, key_prob_meta, key_dict in zip(df_model_dict_meta, df_prob_d
                 st.session_state[f'fig_{key_model_meta}_comparison'] = fig
 
       
-st.sidebar.subheader('Cluster set-up')
-option = st.sidebar.selectbox('Select cluster', df_model_dict.keys(), key='cluster_button')
+st.sidebar.subheader('Cluster selection')
+option = st.sidebar.selectbox('', df_model_dict.keys(), key='cluster_button')
 
 col1, col2 = st.columns(2)
 
+# UMAP Chart ################################################################################################################################
 with col1:
         fig = st.session_state[f'fig_{option}_UMAP_{parameter_umap_n_neighbors}_{parameter_umap_min_dist}_{parameter_umap_metric}']
-        st.subheader(f'UMAP chart for {option}')
-        st.plotly_chart(fig, use_container_width=True)
+        fig.update_layout(width = 700, height=600)
+        st.markdown(f'###### Base models and metamodels projection')
+        st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_part_remove)
 
-
+# Comparison Chart ##############################################################################################################################
 with col2:
         fig = st.session_state[f'fig_{option}_meta_comparison']
-        st.subheader(f'Comparison chart for {option}')
-        st.plotly_chart(fig, use_container_width=True)
+        fig.update_layout(width = 600, height=600)
+        st.markdown(f'###### Pairwise comparison of metamodels')
+        st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_remove)
