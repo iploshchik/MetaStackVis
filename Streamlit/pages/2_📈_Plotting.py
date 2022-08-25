@@ -427,7 +427,7 @@ for i in range (8):
                 fig.add_trace(go.Bar(y=df_top_rows.cluster, x=value*7, name=metrics_legend[i], orientation='h', text= np.round(value/100, 4), marker=dict(color=colors[i], line=dict(color=colors[i], width=3))))
 
 # update x values size
-fig.update_layout(yaxis_tickfont_size=12, xaxis_tickfont_size=12, title_text='Model Performance', title_x=0.5)
+fig.update_layout(yaxis_tickfont_size=14, xaxis_tickfont_size=14, title_text='Model Performance', title_x=0.5)
 
 fig.update_layout(barmode='stack', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0), showlegend=True, yaxis=dict(categoryorder = 'total ascending'))
 
@@ -435,24 +435,26 @@ fig.update_layout(barmode='stack', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='
 fig.update_xaxes(title_text='Overall Performance', title_font=dict(size=14))
 fig.update_yaxes(title_text='Cluster', title_font=dict(size=14))
 
-# update legend names
-fig.update_layout(legend_title_text='Metrics')
+# update legend names and change order
+fig.update_layout(legend_title_text='Metrics', legend_traceorder='normal')
+# update legend size
+fig.update_layout(legend=dict(font=dict(size=12)))
 fig.update_traces(textposition='inside')
 fig.update_traces(insidetextanchor='middle')
-# add % to text
-fig.update_traces(texttemplate='%{text:.2%}')
+# add % to text and increase size to 14
+fig.update_traces(texttemplate='%{text:.1%}', textfont=dict(size=14))
 
 # get total length of bars
 total_length = 0
 for i in fig.data:
         total_length += i.x[0]
 
-fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.shape[0], text='Best Performing model', font = dict(size = 14), showarrow=False)
+fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.shape[0], text='Best Performing model', font = dict(size = 16), showarrow=False)
 
 for i in range (df_top_rows.shape[0]):
-        fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.cluster[i], text=df_top_rows.algorithm_name[i], font = dict(size = 12), showarrow=False)
+        fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.cluster[i], text=df_top_rows.algorithm_name[i], font = dict(size = 14), showarrow=False)
 
-fig.update_layout(width = 1300, height=df_top_rows.shape[0]*40, margin=dict(l=0, r=0, t=0, b=0))
+fig.update_layout(width = 1970, height=df_top_rows.shape[0]*44, margin=dict(l=0, r=0, t=0, b=0))
 
 # update plotly config
 st.markdown('###### Metamodel performance per cluster of base models')
@@ -500,13 +502,13 @@ col1, col2 = st.columns(2)
 # UMAP Chart ################################################################################################################################
 with col1:
         fig = st.session_state[f'fig_{option}_UMAP_{parameter_umap_n_neighbors}_{parameter_umap_min_dist}_{parameter_umap_metric}']
-        fig.update_layout(width = 700, height=600)
+        fig.update_layout(width = 1000, height=900)
         st.markdown(f'###### Base models and metamodels projection')
         st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_part_remove)
 
 # Comparison Chart ##############################################################################################################################
 with col2:
         fig = st.session_state[f'fig_{option}_meta_comparison']
-        fig.update_layout(width = 600, height=600)
+        fig.update_layout(width = 900, height=900)
         st.markdown(f'###### Pairwise comparison of metamodels')
         st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_remove)

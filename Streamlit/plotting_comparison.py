@@ -143,21 +143,35 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
                     color='#2ca25f'
 
                 fig.add_trace(go.Indicator(
-                    mode = 'gauge+number+delta',
-                    value =  df_pred_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100,
-                    # add percentage sign to number and decimals to number
-                    number = {'valueformat':'.1%', 'font': {'size': 9}},
-                    delta = {'reference': (df_pred_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}'] - df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}'])/100, 
-                            'increasing': {'color': color, 'symbol': ''}, 'decreasing': {'color': color, 'symbol': ''}, 'font': {'size': 9},
-                            'relative': False, 'valueformat':'.1%'},
-                    gauge = {
-                        'axis': {'range': [0.5, 1], 'tickwidth': 1, 'tickfont': {'size': 6}, 'ticklen' : 1, 'tickvals': [0.6, 0.7, 0.8, 0.9]},
-                        'bar': {'color': "#fdbf6f"},
-                        'steps' : [{'range': [0.5, df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100], 'color': "gray"}],
-                        'threshold' : {'line': {'color': color, 'width': 4}, 
-                        'thickness': 1, 
-                        'value': df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100}},
-                    domain = {'row': i+1, 'column': j+1}))
+                mode = 'gauge+number+delta',
+                value =  df_pred_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100,
+                # add percentage sign to number and decimals to number
+                number = {'valueformat':'.0%', 'font': {'size': 10}},
+                delta = {'reference': (df_pred_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}'] - df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}'])/100, 
+                        'increasing': {'color': color, 'symbol': ''}, 
+                        'decreasing': {'color': color, 'symbol': ''}, 
+                        'font': {'size': 10},
+                        'relative': False, 
+                        'valueformat':'.0%',
+                        'position': "top"},
+                gauge = {
+                    'axis': {
+                        'range': [0.5, 1], 
+                        'tickwidth': 1, 
+                        'tickfont': {'size': 8}, 
+                        'ticklen' : 1, 
+                        'tickvals': [0.6, 0.7, 0.8, 0.9], 
+                        'ticktext': [60, 70, 80, 90]},
+                    'bar': {'color': "#fdbf6f"},
+                    'steps' : [{
+                        'range': [0.5, df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100], 
+                        'color': "gray"}],
+                    'threshold' : {'line': {
+                                    'color': color, 
+                                    'width': 4}, 
+                    'thickness': 1, 
+                    'value': df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100}},
+                domain = {'row': i+1, 'column': j+1}))
 
     fig.update_layout(
         grid = {'rows': 12, 'columns': 12, 'pattern': "independent"})
@@ -214,8 +228,8 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
                     name = algo_cap[i]), row=i+2, col=i+2)
                     # reduce text size
         fig.add_annotation(text=f'Conf.: {df_model_meta.average_probability[i]}%', showarrow=False,
-                    xref="x domain",yref="y domain", yshift =25, 
-                    font={"size":10, 'color':'#000000'}, row=i+2, col=i+2)
+                    xref="x domain",yref="y domain", yshift =40, 
+                    font={"size":12, 'color':'#000000'}, row=i+2, col=i+2)
         # update y axis range
         fig.update_yaxes(range=[y_min, y_max], row=i+2, col=i+2)
         # remove legend and x axes labels
