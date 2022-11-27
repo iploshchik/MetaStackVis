@@ -68,8 +68,8 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
     df_prob_meta_red = df_prob_meta_t[df_prob_meta_t.apply(lambda x: x.min() < 50, axis=1)]
     # reset index for df_pred_meta_red and df_prob_meta_red
     df_prob_meta_red.reset_index(drop=True, inplace=True)
-    # add new column to store the average probability for each instance
-    df_prob_meta_red['average_probability'] = round(df_prob_meta_red.iloc[:,1:].mean(axis=1), 2) 
+    # return average probability for rows and store as a new column
+    df_prob_meta_red['average_probability'] = df_prob_meta_red.mean(axis=1).round(2) 
     # sort by average_probability_norm
     df_prob_meta_red.sort_values(by='average_probability', ascending=False, inplace=True)
     # drop avergae_probability_norm column

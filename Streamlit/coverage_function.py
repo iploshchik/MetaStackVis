@@ -23,10 +23,10 @@ Yellow box: both models predict the wrong class
 def coverage(df, meta_1, meta_2):
 
     # save meta_1, meta_2 and target in a new dataframe
-    df_temp = df[[f'{meta_1}', f'{meta_2}']].copy()
+    df_temp = df[[f'{meta_1}', f'{meta_2}']].copy().reset_index(drop=True)
     # rename columns to meta_1 and meta_2
     df_temp.columns.values[0:2] = [f'meta_{i}' for i in range(1, 3)]
-    df_temp['mean'] = np.round((df_temp.meta_1 + df_temp.meta_2) / 2, 2)
+    df_temp['mean'] = df_temp.mean(axis=1).round(2)
 
     # get square root of count length and round to integer. That is to define the number of rows and columns in the plot
     n = int(np.ceil(np.sqrt(df_temp.shape[0])))

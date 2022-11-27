@@ -50,7 +50,9 @@ algos = st.session_state.algos
 algo = st.session_state.algo
 algo_names = st.session_state.algo_names
 
-if st.sidebar.button('Calculate metamodel performance for initial run or in case source data or clusters have been updated'):
+st.session_state['plotting'] = st.sidebar.button('Calculate metamodel performance for initial run or in case source data or clusters have been updated')
+
+if st.session_state.plotting == True:
 
         # sort dataframes by labels
 
@@ -61,7 +63,7 @@ if st.sidebar.button('Calculate metamodel performance for initial run or in case
         df_model = df_model.reset_index(drop=True)
         df_prob = df_prob.reset_index(drop=True)
 
-        # create empty dictionaries to store results fro all clusters of basemodels and metamodels results
+        # create empty dictionaries to store results for all clusters of basemodels and metamodels results
         df_model_dict = {}
         df_prob_dict = {}
         df_pred_dict = {}
@@ -290,17 +292,21 @@ if st.sidebar.button('Calculate metamodel performance for initial run or in case
                         recall = round(recall_score(y_test, y_pred, average='weighted')*100, 2)
                         roc_auc = round(roc_auc_score(y_test, y_pred, average='weighted')*100, 2)
                         gmean = round(geometric_mean_score(y_test, y_pred, average='weighted')*100, 2)
-                        mcc = round(matthews_corrcoef(y_test, y_pred)*100, 2)
+                        # calcuate mcc using matthews_corrcoef and take absolute value
+                        mcc = round(abs(matthews_corrcoef(y_test, y_pred))*100, 2)
                         f1_weighted = round(f1_score(y_test, y_pred, average='weighted')*100, 2)
                         log_loss = round(metrics.log_loss(y_test, y_pred, normalize=True)*100, 2)
                         average_metrics = (accuracy + precision + recall + roc_auc + gmean + mcc + f1_weighted) / 7
                         average_metrics = round(average_metrics, 2)
                         # add performance metrics to df_model_meta using pd.concat with index
                         df_model_meta = pd.concat([df_model_meta, pd.DataFrame([['meta', x+1, algos[x+1], accuracy, precision, recall, roc_auc, gmean, mcc, f1_weighted, log_loss, average_metrics, f'{final_estimator.get_params()}', 'meta']], columns=df_model_meta.columns, index=[x])], axis=0)
+                
+                # convert mathhews_corrcoef to absolute values
+                df_model_meta['matthews_corrcoef'] = df_model_meta['matthews_corrcoef'].abs()
 
                 # Adding average probability for each model
 
-                df_prob_meta_t = df_prob_meta.transpose()
+                df_prob_meta_t = df_prob_meta.transpose().reset_index(drop=True)
 
                 # total number of predictions
                 n_total = df_prob_meta_t.shape[0]
@@ -370,7 +376,9 @@ if st.sidebar.button('Calculate metamodel performance for initial run or in case
                 highest_rank = df_model_dict_meta[key].sort_values(by=['rank'], ascending=False)['rank'].iloc[0]
                 rank_df = df_model_dict_meta[key][df_model_dict_meta[key]['rank'] == highest_rank]
 
-                rank_df['cluster'] = string
+                key_base = key.replace('_meta', '')
+
+                rank_df['cluster'] = f'{string} ({df_model_dict[key_base].shape[0]} models)'
 
                 df_top_rows = pd.concat([df_top_rows, rank_df], axis=0)
 
@@ -379,8 +387,8 @@ if st.sidebar.button('Calculate metamodel performance for initial run or in case
         # reset index
 
         df_top_rows = df_top_rows.reset_index(drop=True)
-        # create new column by combining rank and index
-        df_top_rows['cluster'] = (df_top_rows.index + 1).astype(str) + '_' + df_top_rows['cluster']
+        # add 'models' if cluster is 'all'
+        df_top_rows['cluster'] = df_top_rows['cluster'].apply(lambda x: x + '_models' if x == 'all' else x)
 
         st.session_state['df_model_dict'] = df_model_dict
         st.session_state['df_prob_dict'] = df_prob_dict
@@ -392,123 +400,128 @@ if st.sidebar.button('Calculate metamodel performance for initial run or in case
         st.session_state['algo_names_dict'] = algo_names_dict
         st.session_state['df_top_rows'] = df_top_rows
 
-st.sidebar.subheader('Set parameters for UMAP projection')
-parameter_umap_n_neighbors = st.sidebar.selectbox('Number of neighbors', [3, 4, 5, 6], key='n_neighbors')
-parameter_umap_metric = st.sidebar.selectbox('Metric', ['euclidean', 'manhattan'], key='metric')
-parameter_umap_min_dist = st.sidebar.selectbox('Minimal distance', [0.2, 0.5],key='min_dist')
+
+if 'df_model_dict' in st.session_state and 'df_prob_dict' in st.session_state and 'df_pred_dict' in st.session_state and 'df_model_dict_meta' in st.session_state and 'df_prob_dict_meta' in st.session_state and  'df_pred_dict_meta' in st.session_state and 'algo_dict' in st.session_state and 'algo_names_dict' in st.session_state and  'df_top_rows' in st.session_state:
 
 
-df_model_dict = st.session_state['df_model_dict']
-df_prob_dict = st.session_state['df_prob_dict']
-df_pred_dict = st.session_state['df_pred_dict']
-df_model_dict_meta = st.session_state['df_model_dict_meta']
-df_model_dict_meta= st.session_state.df_model_dict_meta
-df_prob_dict_meta= st.session_state.df_prob_dict_meta
-df_pred_dict_meta = st.session_state.df_pred_dict_meta
-algo_dict = st.session_state.algo_dict
-algo_names_dict = st.session_state.algo_names_dict
-df_top_rows = st.session_state.df_top_rows
+        st.sidebar.subheader('Set parameters for UMAP projection')
+        parameter_umap_n_neighbors = st.sidebar.selectbox('Number of neighbors', [3, 4, 5, 6], key='n_neighbors')
+        parameter_umap_metric = st.sidebar.selectbox('Metric', ['euclidean', 'manhattan'], key='metric')
+        parameter_umap_min_dist = st.sidebar.selectbox('Minimal distance', [0.2, 0.5],key='min_dist')
 
-fig = go.Figure()
+        df_model_dict = st.session_state.df_model_dict
+        df_prob_dict = st.session_state.df_prob_dict
+        df_pred_dict = st.session_state.df_pred_dict
+        df_model_dict_meta = st.session_state.df_model_dict_meta
+        df_model_dict_meta= st.session_state.df_model_dict_meta
+        df_prob_dict_meta= st.session_state.df_prob_dict_meta
+        df_pred_dict_meta = st.session_state.df_pred_dict_meta
+        algo_dict = st.session_state.algo_dict
+        algo_names_dict = st.session_state.algo_names_dict
+        df_top_rows = st.session_state.df_top_rows
 
-# HDBSCAN ######################################################################################################################
+        fig = go.Figure()
 
-# https://plotly.com/python/horizontal-bar-charts/
+        # HDBSCAN ######################################################################################################################
 
-metrics = ['accuracy', 'precision', 'recall', 'roc_auc_score', 'geometric_mean_score', 'matthews_corrcoef', 'f1_weighted', 'average_probability']
-metrics_legend = ['Accuracy', 'Precision', 'Recall', 'ROC AUC', 'Geometric Mean', 'Matthews CorrCoeff', 'F1 Score', 'Confidence Interval']
-colors = ['#c6dfcd', '#f5f2d3', '#e6d5c3', '#c9a8a0', '#737d89', '#869f9f', '#a3a0b8', '#a7bed3']
+        # https://plotly.com/python/horizontal-bar-charts/
 
-for i in range (8):
-        value = df_top_rows[f'{metrics[i]}']
-        if metrics[i] != 'average_probability':
-                fig.add_trace(go.Bar(y=df_top_rows.cluster, x=value, name=metrics_legend[i], orientation='h', text= np.round(value/100, 4), marker=dict(color=colors[i], line=dict(color=colors[i], width=3))))
-        else:
-                fig.add_trace(go.Bar(y=df_top_rows.cluster, x=value*7, name=metrics_legend[i], orientation='h', text= np.round(value/100, 4), marker=dict(color=colors[i], line=dict(color=colors[i], width=3))))
+        metrics = ['accuracy', 'precision', 'recall', 'roc_auc_score', 'geometric_mean_score', 'matthews_corrcoef', 'f1_weighted', 'average_probability']
+        metrics_legend = ['Accuracy', 'Precision', 'Recall', 'ROC AUC', 'Geometric Mean', 'Matthews CorrCoeff', 'F1 Score', 'Confidence']
+        colors = ['#c6dfcd', '#f5f2d3', '#e6d5c3', '#c9a8a0', '#737d89', '#869f9f', '#a3a0b8', '#a7bed3']
 
-# update x values size
-fig.update_layout(yaxis_tickfont_size=14, xaxis_tickfont_size=14, title_text='Model Performance', title_x=0.5)
+        for i in range (8):
+                value = df_top_rows[f'{metrics[i]}']
+                if metrics[i] != 'average_probability':
+                        fig.add_trace(go.Bar(y=df_top_rows.cluster, x=value, name=metrics_legend[i], orientation='h', text= np.round(value/100, 4), marker=dict(color=colors[i], line=dict(color=colors[i], width=3))))
+                else:
+                        fig.add_trace(go.Bar(y=df_top_rows.cluster, x=value*7, name=metrics_legend[i], orientation='h', text= np.round(value/100, 4), marker=dict(color=colors[i], line=dict(color=colors[i], width=3))))
 
-fig.update_layout(barmode='stack', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0), showlegend=True, yaxis=dict(categoryorder = 'total ascending'))
+        # update x values size
+        fig.update_layout(yaxis_tickfont_size=14, xaxis_tickfont_size=14, title_text='Model Performance', title_x=0.5)
 
-# add title for x axes and y axes
-fig.update_xaxes(title_text='Overall Performance', title_font=dict(size=14))
-fig.update_yaxes(title_text='Cluster', title_font=dict(size=14))
+        fig.update_layout(barmode='stack', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0), showlegend=True, yaxis=dict(categoryorder = 'total ascending'))
 
-# update legend names and change order
-fig.update_layout(legend_title_text='Metrics', legend_traceorder='normal')
-# update legend size
-fig.update_layout(legend=dict(font=dict(size=12)))
-fig.update_traces(textposition='inside')
-fig.update_traces(insidetextanchor='middle')
-# add % to text and increase size to 14
-fig.update_traces(texttemplate='%{text:.1%}', textfont=dict(size=14))
+        # add title for x axes and y axes
+        fig.update_xaxes(title_text='Overall Performance', title_font=dict(size=14))
+        fig.update_yaxes(title_text='Cluster', title_font=dict(size=14))
 
-# get total length of bars
-total_length = 0
-for i in fig.data:
-        total_length += i.x[0]
+        # update legend names and change order
+        fig.update_layout(legend_title_text='Metrics', legend_traceorder='normal')
+        # update legend size
+        fig.update_layout(legend=dict(font=dict(size=12)))
+        fig.update_traces(textposition='inside')
+        fig.update_traces(insidetextanchor='middle')
+        # add % to text and increase size to 14
+        fig.update_traces(texttemplate='%{text:.1%}', textfont=dict(size=14))
 
-fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.shape[0], text='Best Performing model', font = dict(size = 16), showarrow=False)
+        # get total length of bars
+        total_length = 0
+        for i in fig.data:
+                total_length += i.x[0]
 
-for i in range (df_top_rows.shape[0]):
-        fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.cluster[i], text=df_top_rows.algorithm_name[i], font = dict(size = 14), showarrow=False)
+        fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.shape[0], text='Best Performing Metamodel', font = dict(size = 16), showarrow=False)
 
-fig.update_layout(width = 1970, height=df_top_rows.shape[0]*44, margin=dict(l=0, r=0, t=0, b=0))
+        for i in range (df_top_rows.shape[0]):
+                fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.cluster[i], text=df_top_rows.algorithm_name[i], font = dict(size = 14), showarrow=False)
 
-# update plotly config
-st.markdown('###### Metamodel performance per cluster of base models')
-st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_remove)
+        fig.update_layout(width = 1970, height=df_top_rows.shape[0]*44, margin=dict(l=0, r=0, t=0, b=0))
 
-
-min_performance_all = []
-max_performance_all = []
-
-for key_model in df_model_dict:
-    # retrun min axn max overall perfromance
-    min = df_model_dict[key_model]['overall_performance'].min()
-    max = df_model_dict[key_model]['overall_performance'].max()
-    # add to list
-    min_performance_all.append(min)
-    max_performance_all.append(max)
-# convert to numpy array
-min_performance_all = np.array(min_performance_all)
-max_performance_all = np.array(max_performance_all)
-# return min value from min performance list and max value from max performance list
-min_performance = min_performance_all.min()
-# round down min value to closest ten
-min_performance= math.floor(min_performance/10)*10
-max_performance = max_performance_all.max()
-# round up max value to closest ten
-max_performance= math.ceil(max_performance/10)*10
-
-for key_model, key_model_meta, key_prob, key_prob_meta, cluster in zip(df_model_dict, df_model_dict_meta, df_prob_dict, df_prob_dict_meta, df_top_rows.cluster):
-        with st.spinner('UMAP chart generation'):
-                umap_layout = plottingUMAP(df_model_dict[key_model], df_model_dict_meta[key_model_meta], df_prob_dict[key_prob], df_prob_dict_meta[key_prob_meta])
-                for key in umap_layout.keys():
-                        st.session_state[f'fig_{key_model}_{key}'] = umap_layout[key]
-
-for key_model_meta, key_prob_meta, key_dict in zip(df_model_dict_meta, df_prob_dict_meta, algo_dict):
-        with st.spinner('Scatter plot generation'):
-                fig = plotting_comparison(df_model_dict_meta[key_model_meta], df_prob_dict_meta[key_prob_meta], algo_dict[key_dict])
-                st.session_state[f'fig_{key_model_meta}_comparison'] = fig
-
-      
-st.sidebar.subheader('Cluster selection')
-option = st.sidebar.selectbox('', df_model_dict.keys(), key='cluster_button')
-
-col1, col2 = st.columns(2)
-
-# UMAP Chart ################################################################################################################################
-with col1:
-        fig = st.session_state[f'fig_{option}_UMAP_{parameter_umap_n_neighbors}_{parameter_umap_min_dist}_{parameter_umap_metric}']
-        fig.update_layout(width = 1000, height=900)
-        st.markdown(f'###### Base models and metamodels projection')
-        st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_part_remove)
-
-# Comparison Chart ##############################################################################################################################
-with col2:
-        fig = st.session_state[f'fig_{option}_meta_comparison']
-        fig.update_layout(width = 900, height=900)
-        st.markdown(f'###### Pairwise comparison of metamodels')
+        # update plotly config
+        st.markdown('###### Metamodel performance for all base models and per cluster of base models')
         st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_remove)
+
+
+        min_performance_all = []
+        max_performance_all = []
+
+        for key_model in df_model_dict:
+                # return min and max overall perfromance
+                min = df_model_dict[key_model]['overall_performance'].min()
+                max = df_model_dict[key_model]['overall_performance'].max()
+                # add to list
+                min_performance_all.append(min)
+                max_performance_all.append(max)
+        # convert to numpy array
+        min_performance_all = np.array(min_performance_all)
+        max_performance_all = np.array(max_performance_all)
+        # return min value from min performance list and max value from max performance list
+        min_performance = min_performance_all.min()
+        # round down min value to closest ten
+        min_performance= math.floor(min_performance/10)*10
+        max_performance = max_performance_all.max()
+        # round up max value to closest ten
+        max_performance= math.ceil(max_performance/10)*10
+
+        for key_model, key_model_meta, key_prob, key_prob_meta, cluster in zip(df_model_dict, df_model_dict_meta, df_prob_dict, df_prob_dict_meta, df_top_rows.cluster):
+                with st.spinner('UMAP chart generation'):
+                        umap_layout = plottingUMAP(df_model_dict[key_model], df_model_dict_meta[key_model_meta], df_prob_dict[key_prob], df_prob_dict_meta[key_prob_meta])
+                        for key in umap_layout.keys():
+                                st.session_state[f'fig_{key_model}_{key}'] = umap_layout[key]
+
+        for key_model_meta, key_prob_meta, key_dict in zip(df_model_dict_meta, df_prob_dict_meta, algo_dict):
+                with st.spinner('Scatter plot generation'):
+                        fig = plotting_comparison(df_model_dict_meta[key_model_meta], df_prob_dict_meta[key_prob_meta], algo_dict[key_dict])
+                        st.session_state[f'fig_{key_model_meta}_comparison'] = fig
+
+        
+        st.sidebar.subheader('Cluster selection')
+        option = st.sidebar.selectbox('', df_model_dict.keys(), key='cluster_button')
+
+        col1, col2 = st.columns(2)
+
+        # UMAP Chart ################################################################################################################################
+        with col1:
+                fig = st.session_state[f'fig_{option}_UMAP_{parameter_umap_n_neighbors}_{parameter_umap_min_dist}_{parameter_umap_metric}']
+                fig.update_layout(width = 1000, height=900)
+                st.markdown(f'###### Base models and metamodels projection')
+                st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_part_remove)
+
+        # Comparison Chart ##############################################################################################################################
+        with col2:
+                fig = st.session_state[f'fig_{option}_meta_comparison']
+                fig.update_layout(width = 900, height=900)
+                st.markdown(f'###### Pairwise comparison of metamodels')
+                st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_remove)
+else:
+        st.warning('Please proceed with metamodel perfomance calculation')

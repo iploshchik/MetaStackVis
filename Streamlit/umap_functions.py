@@ -46,14 +46,10 @@ def plottingUMAP(df_model, df_model_meta, df_prob, df_prob_meta):
         # create new column "size", set to 2 for rows with "meta" in "model_id", else 1
         df_model_all['size'] = np.where(df_model_all['model_id'].str.contains('meta'), 2, 1)
         # create new column for text of points
-        df_model_all['text'] = df_model_all['algorithm_name'] + '<br>' + 'Performance: ' + \
-                df_model_all['overall_performance'].astype(str) + '%' + '<br>' + 'Model ID: ' + df_model_all['model_id'].astype(str) + \
-                '<br>' + 'Accuracy: ' + df_model_all['accuracy'].astype(str) + '%' + '<br>' + 'Precision: ' + \
-                df_model_all['precision'].astype(str) + '%' + '<br>' + 'Recall: ' + df_model_all['recall'].astype(str) + \
-                '%' + '<br>' + 'ROC AUC: ' + df_model_all['roc_auc_score'].astype(str) + '<br>' + 'Geometric Mean: ' + \
-                df_model_all['geometric_mean_score'].astype(str) + '<br>' + 'Matthews Correlation: ' + \
-                df_model_all['matthews_corrcoef'].astype(str) + '<br>' + 'F1: ' + df_model_all['f1_weighted'].astype(str) + \
-                '<br>' + 'Average Probability: ' + df_model_all['average_probability'].astype(str)
+        df_model_all['text'] = df_model_all['algorithm_name'] + '<br>' + 'Performance: ' + df_model_all['overall_performance'].astype(str) + '%' + '<br>' + 'Model ID: ' + df_model_all['model_id'].astype(str) + '<br>' + 'Accuracy: ' + df_model_all['accuracy'].astype(str) + '%' + '<br>' + 'Precision: ' + df_model_all['precision'].astype(str) + '%' + '<br>' + 'Recall: ' + df_model_all['recall'].astype(str) + '%' + '<br>' + 'ROC AUC: ' + df_model_all['roc_auc_score'].astype(str) + '<br>' + 'Geometric Mean: ' + df_model_all['geometric_mean_score'].astype(str) + '<br>' + 'Matthews Correlation: ' + df_model_all['matthews_corrcoef'].astype(str) + '<br>' + 'F1: ' + df_model_all['f1_weighted'].astype(str) + '<br>' + 'Confidence: ' + df_model_all['average_probability'].astype(str)
+
+        # add metamodel  to text for metamodels
+        df_model_all['text'] = np.where(df_model_all['model_id'].str.contains('meta'), 'MetaModel' + '<br>' + df_model_all['text'], 'Base Model' + '<br>' + df_model_all['text'])
 
         # set df_prob_meta columns as df_prob columns
         df_prob_meta.columns = df_prob.columns
@@ -73,7 +69,7 @@ def plottingUMAP(df_model, df_model_meta, df_prob, df_prob_meta):
         umap_figs = {}
 
 
-        for i in [3, 4, 5, 6]:
+        for i in [3, 4, 5]:
                 for j in [0.2, 0.5]:
                         for metric in ['euclidean', 'manhattan']:
                                 df_model_all_umap = df_model_all.copy()
@@ -88,7 +84,7 @@ def plottingUMAP(df_model, df_model_meta, df_prob, df_prob_meta):
 
                                 for key in algos.keys():
                                         df_model_red = df_model_all_umap[df_model_all_umap['algorithm_id'] == key]
-                                        fig.add_trace(go.Scatter(x=df_model_red['UMAP_1'], y=df_model_red['UMAP_2'], mode='markers', hovertext=df_model_red['text'], marker=dict(size=df_model_red['size']*20, symbol = df_model_red['algorithm_id'].map(symbols_dict), opacity = df_model_red['average_probability_norm'], line=dict(width=1, color='Black'), color=df_model_red['overall_performance'], coloraxis='coloraxis'), name = algos[key]))
+                                        fig.add_trace(go.Scatter(x=df_model_red['UMAP_1'], y=df_model_red['UMAP_2'], mode='markers', hovertext=df_model_red['text'], marker=dict(size=df_model_red['size']*20, symbol = df_model_red['algorithm_id'].map(symbols_dict), opacity = df_model_red['average_probability_norm'], line=dict(width=df_model_red['size'], color='Black'), color=df_model_red['overall_performance'], coloraxis='coloraxis'), name = algos[key]))
 
                                 fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=0, b=0))
                                 
