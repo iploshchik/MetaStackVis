@@ -62,27 +62,19 @@ def coverage(df, meta_1, meta_2):
         for j in range(n):
             fig.add_shape(type='circle', x0=0, y0=0, x1=1, y1=1, line=dict(width=2), row=i+1, col=j+1)
             fig.update_shapes(
-                # when both models are larger then 50%, color the box white
-                fillcolor='#ffffff' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] >= 50)
-                # when meta_1 is larger then 50% and meta_2 less then 50% and combination is larger then 50%, color the box red
-                else '#cd5c5c' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] >= 50)
-                # when meta_1 is larger then 50% and meta_2 less then 50% and combination is less then 50%, color the box light red
-                else '#df9797' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] < 50)
-                # when meta_1 is less then 50% and meta_2 larger then 50% and combination is larger then 50%, color the box blue
-                else '#2e5984' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] >= 50) 
-                # when meta_1 is less then 50% and meta_2 larger then 50% and combination is less then 50%, color the box light blue
-                else '#91bad6' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] < 50)
-                # when both moels are less then 50%, color the box yellow
-                else '#ffd700' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] < 50)
-                # else color the box white
-                else '#ffffff', row=i+1, col=j+1)
+                fillcolor='#ffffff' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] >= 50) # white
+                else '#df9797' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] >= 50) # light red
+                else '#cd5c5c' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] < 50) # dark red
+                else '#91bad6' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] >= 50) # light blue
+                else '#2e5984' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] < 50) # dark blue
+                else '#ffd700' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] < 50) # yellow
+                else '#ffffff', row=i+1, col=j+1) # white
             fig.update_shapes(
-                # define circe border colors
                 line=dict(color='#675c57' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] >= 50)
-                else '#cd5c5c' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] >= 50)
-                else '#df9797' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] < 50)
-                else '#2e5984' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] >= 50) 
-                else '#91bad6' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] < 50)
+                else '#df9797' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] >= 50)
+                else '#cd5c5c' if (df_count.iloc[i, j][0] >= 50 and df_count.iloc[i, j][1] < 50 and  df_count.iloc[i, j][2] < 50)
+                else '#91bad6' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] >= 50) 
+                else '#2e5984' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] >= 50 and  df_count.iloc[i, j][2] < 50)
                 else '#ffd700' if (df_count.iloc[i, j][0] < 50 and df_count.iloc[i, j][1] < 50) 
                 else '#ffffff'), row=i+1, col=j+1)
 
