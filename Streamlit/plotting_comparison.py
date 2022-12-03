@@ -163,9 +163,9 @@ def plotting_comparison(df_model_meta, df_prob_meta, algo):
                         'tickvals': [0.6, 0.7, 0.8, 0.9], 
                         'ticktext': [60, 70, 80, 90]},
                     'bar': {'color': "#fdbf6f"},
-                    'steps' : [{
-                        'range': [0.5, df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100], 
-                        'color': "gray"}],
+                    # 'steps' : [{
+                    #     'range': [0.5, df_prob_meta_cor.loc[f'meta_{i+1}', f'meta_{j+1}']/100], 
+                    #     'color': "gray"}],
                     'threshold' : {'line': {
                                     'color': color, 
                                     'width': 4}, 
