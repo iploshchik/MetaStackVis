@@ -5,3 +5,5 @@
 *.pyc
 *.docx
 *.json
+.vscode
+.ipynb_checkpoints
