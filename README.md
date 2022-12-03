@@ -17,12 +17,4 @@ Ilya Ploshchik
 Angelos Chatzimparmpas and Prof. Dr. Andreas Kerren 
 
 ---
-
----
-#### [Bachelor Thesis - Overleaf](https://www.overleaf.com/project/62160132a4acf981ca624cc0)
-#### [Source file - python script](2dv50e.py)
-#### [Source file - jupyter notebook](2dv50e.ipynb)
-#### [StreamLit-dashboard](https://share.streamlit.io/ilyaploshchik/2dv50e/main/2dv50e.py)
----
----
-***Linnaeus university, Faculty of Technology - Spring 2022***
+***Linnaeus university, Faculty of Technology***
