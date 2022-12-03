@@ -34,17 +34,6 @@ st.write('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_h
 plotly_config_DB_remove = dict({'displayModeBar': False})
 plotly_config_DB_part_remove = dict({'displaylogo': False, 'modeBarButtonsToRemove': ['toImage', 'select2d', 'lasso2d', 'autoscale']})
 
-# reduce sidebar width
-st.markdown(
-        """
-        <style>
-        .css-1aumxhk {
-                flex-basis: 5rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-        )
 
 
 
@@ -366,11 +355,6 @@ if st.session_state.plotting == True:
                 algo_dict[f'{key_algo}'] = algo_meta
                 algo_names_dict[f'{key_name_algo}'] = algo_names_meta
 
-                # # Save all dataframes to csv
-                # df_model_meta.to_csv(path + f'{key_model}_meta.csv')
-                # df_prob_meta.to_csv(path + f'{key_prob}_meta.csv')
-                # df_pred_meta.to_csv(path + f'{key_pred}_meta.csv')
-
                 percent_complete = percent_complete +  (1 / len(df_model_dict.keys()))
                 my_bar.progress(percent_complete)
 
@@ -478,7 +462,7 @@ if 'df_model_dict' in st.session_state and 'df_prob_dict' in st.session_state an
         for i in range (df_top_rows.shape[0]):
                 fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.cluster[i], text=df_top_rows.algorithm_name[i], font = dict(size = 14), showarrow=False)
 
-        fig.update_layout(width = 1970, height=df_top_rows.shape[0]*44, margin=dict(l=0, r=0, t=0, b=0))
+        fig.update_layout(width = 1900, height=df_top_rows.shape[0]*44, margin=dict(l=0, r=20, t=0, b=0))
 
         # update plotly config
         st.markdown('###### Stacked bar chart (Metamodel performance for all base models and per cluster of base models)')
@@ -526,15 +510,15 @@ if 'df_model_dict' in st.session_state and 'df_prob_dict' in st.session_state an
         # UMAP Chart ################################################################################################################################
         with col1:
                 fig = st.session_state[f'fig_{option}_UMAP_{parameter_umap_n_neighbors}_{parameter_umap_min_dist}_{parameter_umap_metric}']
-                fig.update_layout(width = 1000, height=900)
+                fig.update_layout(width=1000, height=900, plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=10, r=10, t=0, b=0))
                 st.markdown(f'###### UMAP plot (Base models and metamodels projection)')
-                st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_part_remove)
+                st.plotly_chart(fig, use_container_width=True, config=plotly_config_DB_part_remove)
 
         # Comparison Chart ##############################################################################################################################
         with col2:
                 fig = st.session_state[f'fig_{option}_meta_comparison']
-                fig.update_layout(width = 900, height=900)
+                fig.update_layout(width=900, height=900, plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=10, r=10, t=0, b=0))
                 st.markdown(f'###### Zone-based matrix (Pairwise comparison of metamodels)')
-                st.plotly_chart(fig, use_container_width=False, config=plotly_config_DB_remove)
+                st.plotly_chart(fig, use_container_width=True, config=plotly_config_DB_remove)
 else:
         st.warning('Please proceed with metamodel perfomance calculation')
