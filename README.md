@@ -1,4 +1,4 @@
-## Bachelor Degree Project - Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning
+## Visually-Assisted Performance Evaluation of Metamodels in Stacking Ensemble Learning
 
 Stacking methods (or stacked generalizations) refer to a group of ensemble learning methods where several base models (“weak learners”) are trained and combined into a metamodel with improved predictive power. Stacked generalization can reduce the bias and decrease the generalization error when compared to the use of single learning algorithms.
 The ISOVIS research group at LNU has already developed a visual analytics system, called StackGenVis, that assists users in dynamically adapting performance metrics, managing data instances, selecting the most important features for a given data set, choosing a set of top-performant and diverse algorithms, and measuring the predictive performance.
