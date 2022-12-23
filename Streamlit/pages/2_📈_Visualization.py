@@ -462,7 +462,7 @@ if 'df_model_dict' in st.session_state and 'df_prob_dict' in st.session_state an
         for i in range (df_top_rows.shape[0]):
                 fig.add_annotation(xref='x', yref='y', x=total_length, y=df_top_rows.cluster[i], text=df_top_rows.algorithm_name[i], font = dict(size = 14), showarrow=False)
 
-        fig.update_layout(width = 1900, height=df_top_rows.shape[0]*44, margin=dict(l=0, r=20, t=0, b=0))
+        fig.update_layout(width = 2000, height=df_top_rows.shape[0]*44, margin=dict(l=0, r=20, t=0, b=0))
 
         # update plotly config
         st.markdown('###### Stacked bar chart (Metamodel performance for all base models and per cluster of base models)')
