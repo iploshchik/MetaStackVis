@@ -328,7 +328,7 @@ if st.session_state.plotting == True:
                 # add prob_meta to df_model_meta as new column "average_probability"
                 df_model_meta['average_probability'] = pd.Series(prob_meta)
 
-                df_model_meta['rank'] = df_model_meta['overall_performance'] * df_model_meta['average_probability'] / 10000
+                df_model_meta['rank'] = (df_model_meta['overall_performance'] + df_model_meta['average_probability']) / 2
                 # df_model_meta sort by overall performance and average probability in descending order
                 df_model_meta = df_model_meta.sort_values(by=['rank'], ascending=False)
                 # sort values in df_prob_meta by df_temp index
